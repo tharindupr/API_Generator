@@ -8,3 +8,16 @@ exports.save = function (req, res) {
    res.json({ message: 'Bear created!' });
   });
 };
+
+
+exports.see = function(req, res) {
+
+    Bear.find(function(err, bears) {
+     
+           if (err)
+                res.send(err);
+
+            res.json(bears);
+        }); 
+
+ };
