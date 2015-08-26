@@ -1,7 +1,9 @@
 var Bear = require('../models/bear');
 
+
 exports.save = function (req, res) {
   var bear = new Bear();      // create a new instance of the Bear model
+  console.log(req.body);
   bear.name = req.body.name;
   bear.save(function(err) {
    if (err) res.send(err);
@@ -21,3 +23,11 @@ exports.see = function(req, res) {
         }); 
 
  };
+
+
+ exports.get = function (req, res) {
+       Bear.find({ "_id":  req.params.id }, function (err, rcd) {
+            if (err) console.log(err);
+            res.json(rcd);
+       });
+};
