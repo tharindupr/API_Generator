@@ -31,6 +31,9 @@ def createMongoController(model,requests):
                 file.write(model[:-1]+"."+param+"=req.body."+param+";\n")
             file.write(model[:-1]+".save(function(err) {\n")
             file.write("if (err) res.send(err);\nres.json({ message: 'created!' });\n});\n};\n\n")
+
+        if(i=='get'):
+            print("get found")
     file.close()
     
 #Loading the YAML into a dictionary.
