@@ -32,7 +32,8 @@ def createMongoController(model,requests):
             file.write(model[:-1]+".save(function(err) {\n")
             file.write("if (err) res.send(err);\nres.json({ message: 'created!' });\n});\n};\n\n")
     file.close()
-#Loading the YAML into a dict.
+    
+#Loading the YAML into a dictionary.
 yml = open("test.YAML","r")
 data = yaml.load(yml)
 
