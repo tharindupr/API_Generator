@@ -13,8 +13,6 @@ router.route('/bears')
     .post(function(req, res) {
       bearController.save(req, res)
     })
-    .get(function(req, res) {
-       bearController.see(req, res)
-    });
+    .get(bearController.see);
 
 module.exports = router;
