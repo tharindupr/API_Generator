@@ -10,3 +10,10 @@ res.json({ message: 'created!' });
 });
 };
 
+exports.see = function(req, res) {
+Song.find(function(err, val) {
+if (err)
+	res.send(err);
+		res.json(val);
+}); 
+};

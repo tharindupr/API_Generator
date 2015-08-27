@@ -1,11 +1,15 @@
 var express = require('express');
 var router = express.Router();
-var Bear     = require('../models/bear');
-var Song     = require('../models/song');
-//var controllers = require('../controllers')]
-var bearController = require('../controllers/bear');
 var songController = require('../controllers/song');
-var router = express.Router();              // get an instance of the express Routers
+var songController = require('../controllers/song');
+
+
+
+var bearController = require('../controllers/bear');
+router.route('/songs')
+
+
+
 
 
 router.route('/bears')
