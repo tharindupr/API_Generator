@@ -17,3 +17,13 @@ if (err)
 		res.json(val);
 }); 
 };
+
+exports.getsongId = function(req, res) {
+	Song.find({ 'songId':  req.params.songId }, function (err, rcd) {
+		if (err) console.log(err);
+		res.json(rcd);
+	});
+};
+
+
+

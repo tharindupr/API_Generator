@@ -31,3 +31,15 @@ exports.see = function(req, res) {
             res.json(rcd);
        });
 };
+
+
+exports.delete = function (req, res) {
+
+    Bear.remove({ _id: req.body.id }, function(err) {
+    if (err) console.log(err);
+    res.json("'status':'1'");        
+});
+       
+};
+
+

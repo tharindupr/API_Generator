@@ -2,12 +2,12 @@ var express = require('express');
 var router = express.Router();
 var songController = require('../controllers/song');
 
-
+var bearController = require('../controllers/bear');
 
 
 
 router.route('/songs')
-var bearController = require('../controllers/bear');
+
 	.get(songController.see)
 
 	.post(function(req, res) {
@@ -36,6 +36,11 @@ router.route('/bears')
 
  	.get(function(req, res) {
        bearController.get(req, res)
+    })
+
+
+    .delete(function(req, res) {
+       bearController.delete(req, res)
     });
 
 

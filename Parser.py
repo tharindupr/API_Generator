@@ -24,6 +24,7 @@ def createMongoController(model,requests):
     for i in requests:
         
         if(i=='post'):
+            #handles post method to the main resource
             file.write("exports.save = function (req, res) {\n")
             file.write("var "+model[:-1]+"= new "+model[:-1].title()+"();\n")
             for j in schema:    #getting the parameters into the abov object
@@ -33,9 +34,10 @@ def createMongoController(model,requests):
             file.write("if (err) res.send(err);\nres.json({ message: 'created!' });\n});\n};\n\n")
             api[0].append('post:save')
         elif(i=='get'):
+            #handles get  method to the main resource
             file.write("exports.see = function(req, res) {\n")
             file.write(model[:-1].title()+".find(function(err, val) {\n")
-            file.write("if (err)\n\tres.send(err);\n\t\tres.json(val);\n}); \n};")
+            file.write("if (err)\n\tres.send(err);\n\t\tres.json(val);\n}); \n};\n\n")
             api[0].append('get:see')
         
         else:
@@ -44,8 +46,12 @@ def createMongoController(model,requests):
             for sub in subrequests:
                 if(sub=='get'):
                     file.write("exports.get"+i+" = function(req, res) {\n")
-                
-            
+                    file.write("\t"+model[:-1].title()+".find({ '"+i+"':  req.params."+i+" }, function (err, rcd) {\n")
+                    file.write("\t\tif (err) console.log(err);\n\t\tres.json(rcd);\n\t});\n};\n\n")
+                elif(sub=='post'):
+                    continue
+                elif(sub=='delete'):
+                    continue
                 
             
         
