@@ -1,4 +1,4 @@
-title: Amazon simple storage API
+title: Song API
 version: 1
 baseUri: api
 songs:
@@ -6,7 +6,7 @@ songs:
     post:
     songId: 
         get:
-        delete:
+        post:
     schema: 
         name:String
         artist:String

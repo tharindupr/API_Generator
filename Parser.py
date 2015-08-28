@@ -3,7 +3,7 @@ import json
 
 #creating a model that maps to a mongo schema
 def createMongoModel(model,schema):
-    file=open(model[:-1]+".js","w")
+    file=open('models//'+model[:-1]+".js","w")
     file.write("var mongoose     = require('mongoose');\n"+"var Schema= mongoose.Schema;\n")
     file.write("var "+model[:-1].title()+"Schema   = new Schema({\n")
     
@@ -20,6 +20,7 @@ def createMongoController(model,requests):
     del requests['schema']
     file=open('controllers//'+model[:-1]+".js","w")
     file.write("var "+model[:-1].title()+" = require('../models/"+model[:-1]+"');\n\n")
+    
     for i in requests:
         
         if(i=='post'):
@@ -30,32 +31,60 @@ def createMongoController(model,requests):
                 file.write(model[:-1]+"."+param+"=req.body."+param+";\n")
             file.write(model[:-1]+".save(function(err) {\n")
             file.write("if (err) res.send(err);\nres.json({ message: 'created!' });\n});\n};\n\n")
-            api[0].append({'post':'save'})
-        if(i=='get'):
+            api[0].append('post:save')
+        elif(i=='get'):
             file.write("exports.see = function(req, res) {\n")
             file.write(model[:-1].title()+".find(function(err, val) {\n")
             file.write("if (err)\n\tres.send(err);\n\t\tres.json(val);\n}); \n};")
             api[0].append('get:see')
+        
+        else:
+            #handles /song/songId get,post and etc.
+            subrequests=requests[i]
+            for sub in subrequests:
+                if(sub=='get'):
+                    file.write("exports.get"+i+" = function(req, res) {\n")
+                
+            
+                
+            
+        
     file.close()
     return(api)
 
 def addRoutes(controller,routes):
+    #input to this function 'song',[['/songs', 'post:save', 'get:see']]
+
+    
     f = open("routes//api.js", "r")
     contents = f.readlines()
     f.close()
 
     #adding the link of controller to API
     contents.insert(2,"var "+controller+"Controller = require('../controllers/"+controller+"');\n")
-    contents.insert(8,"router.route('/"+controller+"s')\n")
+    
     for route in routes:
-        r=route[0]
         
+        count=0
         for i in route:
-            if(i.rsplit(':')[0]=='get'):
-                     
-                     contents.insert(10,"\t.get("+controller+"Controller."+i.rsplit(':')[1]+");\n")
+            if(count==0):
+                contents.insert(8,"router.route('"+i+"')\n")
+            
+            elif(i.rsplit(':')[0]=='get'):      #adding the get route to api of the given controller in list
+                    if(count==1): 
+                        contents.insert(10,"\t.get("+controller+"Controller."+i.rsplit(':')[1]+");\n\n")     #adding the ; in the last request type of the resource
+                    else:
+                        contents.insert(10,"\t.get("+controller+"Controller."+i.rsplit(':')[1]+")\n\n")
+            
+            elif(i.rsplit(':')[0]=='post'):
+                    if(count==1): 
+                        line= "\t.post(function(req, res) {\n\t"+controller+"Controller."+i.rsplit(':')[1]+"(req, res)\n\t});\n\n"
+                        contents.insert(10,line)
+                    else:
+                        line= "\t.post(function(req, res) {\n\t"+controller+"Controller."+i.rsplit(':')[1]+"(req, res)\n\t})\n\n"
+                        contents.insert(10,line)
 
-                     
+            count+=1
     f = open("routes//api.js", "w")
     contents = "".join(contents)
     f.write(contents)
@@ -80,4 +109,6 @@ del data['version']
 for elements in data:
     createMongoModel(elements,data[elements]['schema'].replace(" ",","))
     
-    print(createMongoController(elements,data[elements]))
+    routes=createMongoController(elements,data[elements])
+    print(routes)
+    addRoutes('song',routes)
