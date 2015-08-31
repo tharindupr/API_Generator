@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+
 var songController = require('../controllers/song');
 
 router.route('/songs')
@@ -22,6 +23,26 @@ router.route('/songs/:songId')
 router.route('/songs/:name')
 
 	.get(songController.getname);
+
+var artistController = require('../controllers/artist');
+
+router.route('/artists')
+
+	.post(function(req, res) {
+	artistController.save(req, res)
+	})
+	.get(artistController.see);
+
+router.route('/artists/:name')
+
+	.put(function(req, res) {
+	artistController.updatename(req, res)
+	})
+	.get(artistController.getname)
+	.delete(function(req, res) {
+	artistController.deletename(req, res)
+	});
+
 
 
 module.exports = router;

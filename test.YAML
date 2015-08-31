@@ -22,6 +22,6 @@ artists:
         put:
         delete:
     schema:
-        name:
-        style:
-        location:
+        name:String
+        style:String
+        location:String

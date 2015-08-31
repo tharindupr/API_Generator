@@ -71,19 +71,18 @@ def createMongoController(model,requests):
 
 def addRoutes(controller,routes):
     #input to this function 'song',[['/songs', 'post:save', 'get:see']]
-    f = open("routes//api.js", "w")
-    f.write("var express = require('express');\n")
-    f.write("var router = express.Router();\n")
+    f = open("routes//api.js", "a")
+   
       
     #adding the link of controller to API
     f.write("var "+controller+"Controller = require('../controllers/"+controller+"');\n\n")
     
     for route in routes:
-        print route
+       
         count=0
         for i in route:
-            print i
-            print(i.rsplit(':')[0])
+         
+           
             if(count==0):
                 f.write("router.route('"+i+"')\n")
             
@@ -100,9 +99,14 @@ def addRoutes(controller,routes):
             count+=1    
         f.write(";\n\n")
         
-    f.write("\nmodule.exports = router;")
     f.close()
-    
+
+def addModuleExport():
+    f = open("routes//api.js", "a")
+    f.write("\n\nmodule.exports = router;")
+    f.close()
+
+
     
 #Loading the YAML into a dictionary.
 yml = open("test.YAML","r")
@@ -120,8 +124,10 @@ del data['version']
 
 
 for elements in data:
-    createMongoModel(elements,data[elements]['schema'].replace(" ",","))
     
+    createMongoModel(elements,data[elements]['schema'].replace(" ",","))
     routes=createMongoController(elements,data[elements])
-    print(routes)
-    addRoutes('song',routes)
+    addRoutes(elements[:-1],routes)
+
+
+addModuleExport()
