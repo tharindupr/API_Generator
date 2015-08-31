@@ -35,11 +35,11 @@ exports.see = function(req, res) {
 
 exports.delete = function (req, res) {
 
-    Bear.remove({ _id: req.body.id }, function(err) {
-    if (err) console.log(err);
-    res.json("'status':'1'");        
-});
-       
+    var query = Bear.remove({ "_id":  req.params.id});
+    if(query.exec())
+         res.json("'status':'1'"); 
+    else 
+       res.json("'status':'0'"); 
 };
 
 

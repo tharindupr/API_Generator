@@ -6,7 +6,22 @@ songs:
     post:
     songId: 
         get:
-        post:
-    schema: 
+        delete:
+        put:
+    name:
+        get:
+    schema:
+        songId:String
         name:String
         artist:String
+artists:
+    get:
+    post:
+    name:
+        get:
+        put:
+        delete:
+    schema:
+        name:
+        style:
+        location:

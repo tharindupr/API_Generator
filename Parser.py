@@ -16,7 +16,7 @@ def createMongoModel(model,schema):
 def createMongoController(model,requests):
     api=[['/'+model]]     #add all the things required for the api.js
     schema=requests['schema'].split(" ")
-    print schema
+    #print schema
     del requests['schema']
     file=open('controllers//'+model[:-1]+".js","w")
     file.write("var "+model[:-1].title()+" = require('../models/"+model[:-1]+"');\n\n")
@@ -42,58 +42,65 @@ def createMongoController(model,requests):
         
         else:
             #handles /song/songId get,post and etc.
+            forapi=['/'+model+'/:'+i]
+            #this is to append to api list at the end ['/songs/songId','get:ac']
             subrequests=requests[i]
             for sub in subrequests:
+                #print sub
                 if(sub=='get'):
                     file.write("exports.get"+i+" = function(req, res) {\n")
                     file.write("\t"+model[:-1].title()+".find({ '"+i+"':  req.params."+i+" }, function (err, rcd) {\n")
                     file.write("\t\tif (err) console.log(err);\n\t\tres.json(rcd);\n\t});\n};\n\n")
+                    forapi.append('get:'+'get'+i)
                 elif(sub=='post'):
                     continue
                 elif(sub=='delete'):
-                    continue
-                
-            
+                    file.write("exports.delete"+i+" = function (req, res) {\n")
+                    file.write("\tvar query =" +model[:-1].title()+".remove({ '"+i+"':  req.params."+i+"});\n")
+                    file.write( """\tif(query.exec()) res.json("'status':'1'");\n\telse res.json("'status':'0'"); \n};\n\n""")
+                    forapi.append('delete:'+'delete'+i)
+                elif(sub=='put'):
+                    file.write("exports.update"+i+" = function (req, res) {\n")
+                    file.write("\t"+model[:-1].title()+".update({ '"+i+"':  req.params."+i+"}, req.body , {} , function (err, count) {\n")
+                    file.write("\t\tif (err) console.log(err);\n\t\tres.send({ 'updated': count });\n\t});\n};\n\n")
+                    forapi.append('put:'+'update'+i)
+            api.append(forapi)   
         
     file.close()
     return(api)
 
 def addRoutes(controller,routes):
     #input to this function 'song',[['/songs', 'post:save', 'get:see']]
-
-    
-    f = open("routes//api.js", "r")
-    contents = f.readlines()
-    f.close()
-
+    f = open("routes//api.js", "w")
+    f.write("var express = require('express');\n")
+    f.write("var router = express.Router();\n")
+      
     #adding the link of controller to API
-    contents.insert(2,"var "+controller+"Controller = require('../controllers/"+controller+"');\n")
+    f.write("var "+controller+"Controller = require('../controllers/"+controller+"');\n\n")
     
     for route in routes:
-        
+        print route
         count=0
         for i in route:
+            print i
+            print(i.rsplit(':')[0])
             if(count==0):
-                contents.insert(8,"router.route('"+i+"')\n")
+                f.write("router.route('"+i+"')\n")
             
             elif(i.rsplit(':')[0]=='get'):      #adding the get route to api of the given controller in list
-                    if(count==1): 
-                        contents.insert(10,"\t.get("+controller+"Controller."+i.rsplit(':')[1]+");\n\n")     #adding the ; in the last request type of the resource
-                    else:
-                        contents.insert(10,"\t.get("+controller+"Controller."+i.rsplit(':')[1]+")\n\n")
+                        f.write("\n\t.get("+controller+"Controller."+i.rsplit(':')[1]+")")
             
             elif(i.rsplit(':')[0]=='post'):
-                    if(count==1): 
-                        line= "\t.post(function(req, res) {\n\t"+controller+"Controller."+i.rsplit(':')[1]+"(req, res)\n\t});\n\n"
-                        contents.insert(10,line)
-                    else:
-                        line= "\t.post(function(req, res) {\n\t"+controller+"Controller."+i.rsplit(':')[1]+"(req, res)\n\t})\n\n"
-                        contents.insert(10,line)
-
-            count+=1
-    f = open("routes//api.js", "w")
-    contents = "".join(contents)
-    f.write(contents)
+                        f.write("\n\t.post(function(req, res) {\n\t"+controller+"Controller."+i.rsplit(':')[1]+"(req, res)\n\t})")
+            elif(i.rsplit(':')[0]=='delete'):
+                        f.write("\n\t.delete(function(req, res) {\n\t"+controller+"Controller."+i.rsplit(':')[1]+"(req, res)\n\t})")
+            elif(i.rsplit(':')[0]=='put'):
+                        f.write("\n\t.put(function(req, res) {\n\t"+controller+"Controller."+i.rsplit(':')[1]+"(req, res)\n\t})")
+                
+            count+=1    
+        f.write(";\n\n")
+        
+    f.write("\nmodule.exports = router;")
     f.close()
     
     
