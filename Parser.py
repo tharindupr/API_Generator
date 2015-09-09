@@ -3,7 +3,7 @@ import json
 
 #creating a model that maps to a mongo schema
 def createMongoModel(model,schema):
-    file=open('models//'+model[:-1]+".js","w")
+    file=open('template//models//'+model[:-1]+".js","w")
     file.write("var mongoose     = require('mongoose');\n"+"var Schema= mongoose.Schema;\n")
     file.write("var "+model[:-1].title()+"Schema   = new Schema({\n")
     
@@ -18,7 +18,7 @@ def createMongoController(model,requests):
     schema=requests['schema'].split(" ")
     #print schema
     del requests['schema']
-    file=open('controllers//'+model[:-1]+".js","w")
+    file=open('template//controllers//'+model[:-1]+".js","w")
     file.write("var "+model[:-1].title()+" = require('../models/"+model[:-1]+"');\n\n")
     
     for i in requests:
@@ -71,7 +71,7 @@ def createMongoController(model,requests):
 
 def addRoutes(controller,routes):
     #input to this function 'song',[['/songs', 'post:save', 'get:see']]
-    f = open("routes//api.js", "a")
+    f = open("template//routes//api.js", "a")
    
       
     #adding the link of controller to API
@@ -102,7 +102,7 @@ def addRoutes(controller,routes):
     f.close()
 
 def addModuleExport():
-    f = open("routes//api.js", "a")
+    f = open("template//routes//api.js", "a")
     f.write("\n\nmodule.exports = router;")
     f.close()
 
